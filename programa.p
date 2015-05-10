@@ -12,6 +12,5 @@ Subprograma R
 	global X	
 	local H=6
 	X <- A + H
-	B <- X
-		
+	B <- X		
 Fin
