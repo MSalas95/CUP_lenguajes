@@ -1,4 +1,5 @@
-TR + TEE
+TR
+TEE
 
 Programa P
 	global A=3,B=5
@@ -12,11 +13,5 @@ Subprograma R
 	global X	
 	local H=6
 	X <- A + H
-	B <- X		
-	llamar E
-Fin
-
-Subprograma E
-	global G
-
+	B <- X
 Fin

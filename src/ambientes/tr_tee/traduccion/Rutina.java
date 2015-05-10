@@ -39,9 +39,17 @@ public class Rutina {
     
     public void imprimirRA(){        
             
-        System.out.println("----RA " + nombre + " ----");        
+        System.out.println("----RA " + nombre + " ----");
+        int i=0;
         for (Variable var : RA) {
-            System.out.println(var.getClave()+" = "+var.getValor());            
+            if (i==0) {
+                System.out.println(var.getClave());
+            } else {
+                System.out.println(var.getClave()+" = "+var.getValor());
+            }
+              
+            
+            i++;
         }        
         System.out.println("--------------");        
     

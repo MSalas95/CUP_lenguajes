@@ -23,7 +23,8 @@ public class TR_TEE_Traduccion {
             global = new ArrayList<>();
             AI = new Apuntador(rutinas[0].getNombre(),"0");
             rutinas[0].insertRA("{PR}","SOP");            
-            run(rutinas[0].getNombre());            
+            run(rutinas[0].getNombre());
+            ponerValoresPredeterminados();
            
             
         } catch (FileNotFoundException ex) {
@@ -174,7 +175,7 @@ public class TR_TEE_Traduccion {
              nombre_asignacion_cs = "RA("+tokens_array[1].toLowerCase()+"0) <- AI + 2";
              rutinas[rutinaActual()].CS.add(nombre_asignacion_cs);
              
-             nombre_asignacion_cs = "AI <- "+ tokens_array[1].toLowerCase()+"0";
+             nombre_asignacion_cs = "AI <- "+ tokens_array[1]+"0";
              rutinas[rutinaActual()].CS.add(nombre_asignacion_cs);
              AI.setN(tokens_array[1]);
              AI.setP("0");
@@ -250,7 +251,7 @@ public class TR_TEE_Traduccion {
     
     public void imprimirAI(){
         System.out.println("---AI---");
-        System.out.println(AI.getN()+AI.getP());
+        System.out.println(AI.getN()+","+AI.getP());
         System.out.println("--------");
     }
     
@@ -277,6 +278,22 @@ public class TR_TEE_Traduccion {
         imprimirAI();
         imprimirGlobal();
         imprimirRutinas();        
-    }    
+    }
+    
+    private void ponerValoresPredeterminados(){
+        
+        if (rutinas.length>0) {
+            AI.setN(rutinas[0].getNombre());
+            AI.setP("0");
+            
+            for (int i = 0; i < rutinas.length; i++) {
+                if (rutinas[i].RA.size()>0) {
+                    rutinas[i].RA.get(0).setClave("{PR}");
+                    rutinas[i].RA.get(0).setValor("{PR}");
+                    
+                }
+            }            
+        }
+    }
    
 }
