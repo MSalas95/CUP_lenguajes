@@ -13,4 +13,10 @@ Subprograma R
 	local H=6
 	X <- A + H
 	B <- X		
+	llamar E
+Fin
+
+Subprograma E
+	global G
+
 Fin
