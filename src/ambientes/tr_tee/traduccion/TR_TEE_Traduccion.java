@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 public class TR_TEE_Traduccion {
 
     Apuntador AI;
-    ArrayList<Variable> global;
+    public ArrayList<Variable> global;
     public Rutina[] rutinas;
 
     public TR_TEE_Traduccion() {
@@ -93,15 +93,17 @@ public class TR_TEE_Traduccion {
                 if (trigger==true){
                     
                     if(!linea.equalsIgnoreCase("fin")){
-                    runCode(linea, tokens_array);
+                        runCode(linea, tokens_array);
                     } else {
-                        String nombre_asignacion_cs;
-                        nombre_asignacion_cs = "AI <- RA("+rutinas[rutinaActual()].getNombre().toLowerCase()+"0)";
+                        
+                        String nombre_asignacion_cs;  
+                        nombre_asignacion_cs = "AI <- RA("+rutinas[rutinaActual()].getNombre().toLowerCase()+","+"0)";
                         rutinas[rutinaActual()].CS.add(nombre_asignacion_cs);
                         
                         AI.setP(rutinas[rutinaActual()].RA.get(0).valor);
                         AI.setN(rutinas[rutinaActual()].RA.get(0).clave);
                         
+                        //imprimirAI();
                         break;
                     }
                 }
@@ -135,7 +137,7 @@ public class TR_TEE_Traduccion {
                 }
             }                    
         }  
-
+                
         /** Si son variables locales guardarlas en el RA**/
 
         if (tokens_array[0].equalsIgnoreCase("local")) {                    
@@ -172,10 +174,10 @@ public class TR_TEE_Traduccion {
          if (tokens_array[0].equalsIgnoreCase("llamar")) {   
              cambiarPR(tokens_array[1]);
              String nombre_asignacion_cs;
-             nombre_asignacion_cs = "RA("+tokens_array[1].toLowerCase()+"0) <- AI + 2";
+             nombre_asignacion_cs = "RA("+tokens_array[1].toLowerCase()+","+"0) <- AI + 2";
              rutinas[rutinaActual()].CS.add(nombre_asignacion_cs);
              
-             nombre_asignacion_cs = "AI <- "+ tokens_array[1]+"0";
+             nombre_asignacion_cs = "AI <- "+ tokens_array[1]+","+"0";
              rutinas[rutinaActual()].CS.add(nombre_asignacion_cs);
              AI.setN(tokens_array[1]);
              AI.setP("0");
@@ -195,7 +197,7 @@ public class TR_TEE_Traduccion {
     private int rutinaActual(){ 
         return buscarRutina(AI.getN());
     }
-    private int buscarRutina(String nombre){
+    public int buscarRutina(String nombre){
         for (int i = 0; i < rutinas.length; i++) {
             if (rutinas[i].nombre.equals(nombre)) {
                 return i;
@@ -232,7 +234,7 @@ public class TR_TEE_Traduccion {
         for (int j = 0; j < rutinas[rutinaActual()].RA.size(); j++) {
             String elemento = rutinas[rutinaActual()].RA.get(j).clave;
             if (nombre.equals(elemento)) {
-                return "RA("+AI.getN().toLowerCase()+j+")";
+                return "RA("+AI.getN().toLowerCase()+","+j+")";
             }
         } 
         
@@ -241,7 +243,7 @@ public class TR_TEE_Traduccion {
             
             String elemento = item.getClave();
             if (nombre.equals(elemento)) {
-                return "GLOBAL(g"+i+")";
+                return "GLOBAL(g"+","+i+")";
             }
             i++;
         }
@@ -282,18 +284,16 @@ public class TR_TEE_Traduccion {
     
     private void ponerValoresPredeterminados(){
         
-        if (rutinas.length>0) {
+       /* if (rutinas.length>0) {
             AI.setN(rutinas[0].getNombre());
             AI.setP("0");
             
-            for (int i = 0; i < rutinas.length; i++) {
-                if (rutinas[i].RA.size()>0) {
-                    rutinas[i].RA.get(0).setClave("{PR}");
-                    rutinas[i].RA.get(0).setValor("{PR}");
-                    
+            for (Rutina rutina : rutinas) {
+                if (rutina.RA.size() > 0) {
+                    rutina.RA.get(0).setClave("{PR}");
+                    rutina.RA.get(0).setValor("{PR}");
                 }
             }            
-        }
-    }
-   
+        }*/
+    }   
 }
