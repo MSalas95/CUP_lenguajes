@@ -1,11 +1,14 @@
 package ambientes.tr_tee.enlace;
 
 import ambientes.tr_tee.traduccion.TR_TEE_Traduccion;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 public class TR_TEE_Enlace {
     
     TR_TEE_Traduccion Traduccion;
-    
+    String historico_AI;
     private Rutina[]rutinas;
     private String[] GLOBAL;
     private int AI;
@@ -15,13 +18,17 @@ public class TR_TEE_Enlace {
     public TR_TEE_Enlace(TR_TEE_Traduccion Traduccion) {
         this.Traduccion = Traduccion;
         AI = 300;
+        historico_AI = "";
         llenarDatos();
-        //imprimirGlobal();
+        
         //rutinas[0].imprimirCS();
         //imprimirAI();
         run(rutinas[0].getNombre_rutina());
         //rutinas[0].imprimirCS();
         //rutinas[0].imprimirDS();
+        //imprimirGlobal();
+        //imprimirAI();
+        imprimirTodo();
     }
     
     private void llenarDatos(){
@@ -80,35 +87,92 @@ public class TR_TEE_Enlace {
                 linea = ponerValoresReales(arr_lineas);
                 rutinas[buscarRutina(nombre_rutina)].CS[i] = linea;
                 
+                                
             }
             
             // si es una llamada a una subrutina
             if ((arr_lineas[0].equalsIgnoreCase("AI"))&&(!linea.contains("("))) {               
-                run(arr_lineas[2].split(",")[0]);              
-                rutinas[buscarRutina(nombre_rutina)].CS[i] = linea.replace(arr_lineas[2], valorReal(arr_lineas[2], "l"));
+                          
+                rutinas[buscarRutina(nombre_rutina)].CS[i] = linea.replace(arr_lineas[2], 
+                        String.valueOf(rutinas[buscarRutina(arr_lineas[2].split(",")[0])].getInicio_cs()));
+                run(arr_lineas[2].split(",")[0]);    
             }
+            
+            
             
         }        
     }
-    
-    private void realizarAsignacion(String linea){
         
-        String[] operacion;
-        operacion = linea.split("<-");
-        
-        
-    }
     
     private double realizarOperacion(String operaciones){
         
         String[] valores;
         valores = operaciones.split(" ");
+        String operacion = "";
         
-        for (String item:valores){
+        
+        
+        for (int i=2;i<valores.length;i++){
+            String item = valores[i];
             if (item.contains("(")){
+                
                 String valor_buscar =  item.substring(item.indexOf("(")+1, item.indexOf(")"));
-                System.out.println(valor_buscar);
-            }
+                String[] arr_valores = valor_buscar.split(",");
+                
+                if (arr_valores[0].equals("g")){      
+                    operacion +=
+                     GLOBAL[Integer.parseInt(arr_valores[1])];
+                    
+                } else{
+                    operacion +=
+                     rutinas[buscarRutina(arr_valores[0])].
+                            DS[Integer.parseInt(arr_valores[1])];
+                }
+                
+            } else {
+                if (item.equals("AI")){
+                    operacion += AI;
+                } else {
+                    
+                    if (item.contains(",")){
+                        String[] items = item.split(",");
+                        operacion += rutinas[buscarRutina(items[0])].getInicio_cs();
+                    } else {
+                        operacion += item;
+                    }          
+                    
+                }
+                
+            }   
+        }
+        ScriptEngineManager mgr = new ScriptEngineManager();
+        ScriptEngine engine = mgr.getEngineByName("JavaScript");
+        String resultado="";
+        try {
+            if (valores[0].contains("(")){
+                String valor_buscar =  valores[0].substring(valores[0].indexOf("(")+1, valores[0].indexOf(")"));
+                String[] arr_valores = valor_buscar.split(",");
+                //System.out.println(arr_valores[0]);                
+                resultado = String.valueOf(engine.eval(operacion));
+                if (valores[0].equals("AI")){
+                    
+                } else {
+                    if (arr_valores[0].equals("g")){                    
+                        GLOBAL[Integer.parseInt(arr_valores[1])] = resultado;                   
+                    } else{
+                        rutinas[buscarRutina(arr_valores[0])].DS[Integer.parseInt(arr_valores[1])] = resultado;
+                    }
+                }
+                AI++;
+                historico_AI += AI +" - ";
+            } else {
+                
+                AI = (int) (engine.eval(operacion));
+                historico_AI += AI +" - ";
+            }       
+
+        } catch (ScriptException ex) {
+            
         }
         
         return 0;
@@ -158,10 +222,7 @@ public class TR_TEE_Enlace {
         }
         return -1;
     }
-    
-    private int resolverLinea(String linea){
-        return 0;
-    }
+     
     
         
     private void imprimirGlobal(){
@@ -179,10 +240,25 @@ public class TR_TEE_Enlace {
     
     private void imprimirAI(){
         System.out.println("---AI---");
-        System.out.println(AI);
+        System.out.println("300 - "+historico_AI+ "SOP");
         System.out.println("--------");
     }
     
+    private void imprimirRutinas(){
+        for(Rutina rutina:rutinas){
+            System.out.println("");
+            System.out.println("------ Rutina "+rutina.getNombre_rutina()+" -------");
+            System.out.println("");
+            rutina.imprimirDS();
+            rutina.imprimirCS();
+        }
+    }
+    
+    public void imprimirTodo(){
+        imprimirAI();
+        imprimirGlobal();
+        imprimirRutinas();
+    }
     
     
     
